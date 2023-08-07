@@ -2,12 +2,17 @@
 #include <stdlib.h>
 #include <string.h>
 
+
+
 // Trie structure
 struct Trie
 {	
     int count;
-    struct Trie* children = struct Trie[26];
+    struct Trie** children;
 };
+
+int hasNoChildren(struct Trie* trie);
+struct Trie *createTrie();
 
 // Inserts the word to the trie structure
 void insert(struct Trie *pTrie, char *word)
@@ -100,7 +105,7 @@ struct Trie *deallocateTrie(struct Trie *pTrie)
 struct Trie *createTrie()
 {
     struct Trie* t = malloc(sizeof(struct Trie));
-    t.count = 0;
+    t->count = 0;
     return t;
 }
 
@@ -108,7 +113,21 @@ struct Trie *createTrie()
 // and read all the words in the dictionary to the structure words
 int readDictionary(char *filename, char **pInWords)
 {
-    
+    FILE* file;
+
+    file = fopen(filename, "r");
+    if(file == NULL) {
+        printf("file not found\n");
+        return -1;
+    }
+
+    int line = 0;
+    while(!feof(file)){
+        fgets(pInWords[line], 256, file);
+        line++;
+    }
+    fclose(file);
+    return line;
 }
 
 //helper function for deallocating the function
@@ -128,6 +147,7 @@ int main(void)
 	
 	//read the number of the words in the dictionary
 	int numWords = readDictionary("dictionary.txt", inWords);
+    printf("DEBUG - numWords: %d", numWords);
 	for (int i=0;i<numWords;++i)
 	{
 		printf("%s\n",inWords[i]);
